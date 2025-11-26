@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -6,21 +6,21 @@ declare global {
     var mongooseCache: {
         conn: typeof mongoose | null;
         promise: Promise<typeof mongoose> | null;
-    }
+    };
 }
 
 let cached = global.mongooseCache;
 
-if(!cached) {
+if (!cached) {
     cached = global.mongooseCache = { conn: null, promise: null };
 }
 
 export const connectToDatabase = async () => {
-    if(!MONGODB_URI) throw new Error('MONGODB_URI must be set within .env');
+    if (!MONGODB_URI) throw new Error("MONGODB_URI must be set within .env");
 
-    if(cached.conn) return cached.conn;
+    if (cached.conn) return cached.conn;
 
-    if(!cached.promise) {
+    if (!cached.promise) {
         cached.promise = mongoose.connect(MONGODB_URI, { bufferCommands: false });
     }
 
@@ -31,12 +31,7 @@ export const connectToDatabase = async () => {
         throw err;
     }
 
-    console.log(`Connected to database ${process.env.NODE_ENV} - ${MONGODB_URI}`);
+    // console.log(`Connected to database ${process.env.NODE_ENV} - ${MONGODB_URI}`);
 
     return cached.conn;
-}
-/*
-THis makes sure it connects mongo DB efficiently,
-hot reload - new connection with every reload
-It doesn't open duplicates
- */
+};

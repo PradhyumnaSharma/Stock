@@ -1,9 +1,7 @@
 "use client";
-import React, { useMemo, useState } from "react";
 
-// Minimal WatchlistButton implementation to satisfy page requirements.
-// This component focuses on UI contract only. It toggles local state and
-// calls onWatchlistChange if provided. Styling hooks match globals.css.
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const WatchlistButton = ({
                              symbol,
@@ -11,28 +9,58 @@ const WatchlistButton = ({
                              isInWatchlist,
                              showTrashIcon = false,
                              type = "button",
-                             onWatchlistChange,
                          }: WatchlistButtonProps) => {
-    const [added, setAdded] = useState<boolean>(!!isInWatchlist);
+    const [added, setAdded] = useState(isInWatchlist);
+    const router = useRouter();
 
-    const label = useMemo(() => {
-        if (type === "icon") return added ? "" : "";
-        return added ? "Remove from Watchlist" : "Add to Watchlist";
-    }, [added, type]);
+    useEffect(() => {
+        setAdded(!!isInWatchlist);
+    }, [isInWatchlist]);
 
-    const handleClick = () => {
+    const handleToggle = async () => {
         const next = !added;
         setAdded(next);
-        onWatchlistChange?.(symbol, next);
+
+        try {
+            const formData = new FormData();
+            formData.append("symbol", symbol);
+            formData.append("company", company);
+
+            const url = next ? "/api/watchlist/add" : "/api/watchlist/remove";
+
+            const res = await fetch(url, {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!res.ok) {
+                setAdded(!next);
+                alert("Failed to update watchlist");
+            } else {
+                router.refresh();
+            }
+        } catch (error) {
+            setAdded(!next);
+            console.error("Watchlist update error:", error);
+            alert("Network error");
+        }
     };
 
     if (type === "icon") {
         return (
             <button
-                title={added ? `Remove ${symbol} from watchlist` : `Add ${symbol} to watchlist`}
-                aria-label={added ? `Remove ${symbol} from watchlist` : `Add ${symbol} to watchlist`}
+                title={
+                    added
+                        ? `Remove ${symbol} from watchlist`
+                        : `Add ${symbol} to watchlist`
+                }
+                aria-label={
+                    added
+                        ? `Remove ${symbol} from watchlist`
+                        : `Add ${symbol} to watchlist`
+                }
                 className={`watchlist-icon-btn ${added ? "watchlist-icon-added" : ""}`}
-                onClick={handleClick}
+                onClick={handleToggle}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +81,10 @@ const WatchlistButton = ({
     }
 
     return (
-        <button className={`watchlist-btn ${added ? "watchlist-remove" : ""}`} onClick={handleClick}>
+        <button
+            className={`watchlist-btn ${added ? "watchlist-remove" : ""}`}
+            onClick={handleToggle}
+        >
             {showTrashIcon && added ? (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -63,10 +94,14 @@ const WatchlistButton = ({
                     stroke="currentColor"
                     className="w-5 h-5 mr-2"
                 >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-7 4v6m4-6v6m4-6v6" />
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-7 4v6m4-6v6m4-6v6"
+                    />
                 </svg>
             ) : null}
-            <span>{label}</span>
+            <span>{added ? "Remove from Watchlist" : "Add to Watchlist"}</span>
         </button>
     );
 };

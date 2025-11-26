@@ -29,9 +29,7 @@ export async function getNews(symbols?: string[]): Promise<MarketNewsArticle[]> 
         if (!token) {
             throw new Error('FINNHUB API key is not configured');
         }
-        const cleanSymbols = (symbols || [])
-            .map((s) => s?.trim().toUpperCase())
-            .filter((s): s is string => Boolean(s));
+        const cleanSymbols = (symbols || []).map((s) => s?.trim().toUpperCase()).filter((s): s is string => Boolean(s));
 
         const maxArticles = 6;
 
@@ -42,7 +40,9 @@ export async function getNews(symbols?: string[]): Promise<MarketNewsArticle[]> 
             await Promise.all(
                 cleanSymbols.map(async (sym) => {
                     try {
-                        const url = `${FINNHUB_BASE_URL}/company-news?symbol=${encodeURIComponent(sym)}&from=${range.from}&to=${range.to}&token=${token}`;
+                        const url = `${FINNHUB_BASE_URL}/company-news?symbol=${encodeURIComponent(sym)}&from=${range.from}&to=${
+                            range.to
+                        }&token=${token}`;
                         const articles = await fetchJSON<RawNewsArticle[]>(url, 300);
                         perSymbolArticles[sym] = (articles || []).filter(validateArticle);
                     } catch (e) {

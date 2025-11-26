@@ -487,3 +487,75 @@
 .scrollbar-hide-default::-webkit-scrollbar-thumb:hover {
     background-color: #9095A1;
 }
+
+
+
+/* watchlist page */
+/* Custom styles */
+.watchlist-star {
+    @apply h-4 w-4;
+}
+
+.watchlist-icon-btn {
+    @apply p-1 rounded-full hover:bg-gray-800;
+}
+
+.watchlist-icon-added {
+    @apply text-yellow-500;
+}
+
+.watchlist-btn {
+    @apply px-3 py-1 rounded-md text-sm font-medium transition-colors;
+}
+
+.watchlist-remove {
+    @apply bg-red-600 hover:bg-red-700 text-white;
+}
+
+.watchlist-add {
+    @apply bg-green-600 hover:bg-green-700 text-white;
+}
+
+.search-btn {
+    @apply bg-blue-600 hover:bg-blue-700 text-white;
+}
+
+.search-input {
+    @apply bg-gray-800 text-white placeholder-gray-400;
+}
+
+.search-list {
+    @apply bg-gray-900;
+}
+
+.search-item-link {
+    @apply flex items-center gap-2 p-2 hover:bg-gray-800;
+}
+
+.search-item-name {
+    @apply font-medium;
+}
+
+.search-count {
+    @apply px-4 py-2 bg-gray-800 text-sm font-medium;
+}
+
+.search-list-empty {
+    @apply p-4 text-center text-gray-400;
+}
+
+.search-list-indicator {
+    @apply p-4 text-center text-gray-400;
+}
+
+.search-loader {
+    @apply animate-spin text-gray-400;
+}
+
+.search-field {
+    @apply flex items-center gap-2;
+}
+
+.search-dialog {
+    @apply bg-gray-900 text-white;
+}
